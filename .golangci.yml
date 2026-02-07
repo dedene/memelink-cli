@@ -1,0 +1,68 @@
+version: "2"
+
+linters:
+  default: none
+  enable:
+    - errcheck
+    - govet
+    - ineffassign
+    - staticcheck
+    - unused
+    - bodyclose
+    - err113
+    - errorlint
+    - goconst
+    - gocritic
+    - gocyclo
+    - gosec
+    - misspell
+    - nilerr
+    - noctx
+    - revive
+    - unparam
+    - wastedassign
+    - whitespace
+    - wrapcheck
+
+  settings:
+    gocyclo:
+      min-complexity: 30
+    goconst:
+      min-len: 3
+      min-occurrences: 4
+    govet:
+      enable-all: true
+      disable:
+        - fieldalignment
+
+  exclusions:
+    presets:
+      - std-error-handling
+    rules:
+      - path: _test\.go
+        linters:
+          - errcheck
+          - gocyclo
+          - gosec
+          - goconst
+          - wrapcheck
+      - path: internal/cmd/.*\.go
+        linters:
+          - err113
+          - wrapcheck
+      - path: internal/api/.*\.go
+        linters:
+          - revive
+        text: "var-naming"
+      - linters:
+          - errcheck
+        text: "Error return value of `fmt\\.Fprint"
+
+formatters:
+  enable:
+    - gofumpt
+    - goimports
+  settings:
+    goimports:
+      local-prefixes:
+        - github.com/dedene/memelink-cli

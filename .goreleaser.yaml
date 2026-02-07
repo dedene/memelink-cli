@@ -1,0 +1,47 @@
+version: 2
+project_name: memelink-cli
+
+builds:
+  - main: ./cmd/memelink
+    binary: memelink
+    env:
+      - CGO_ENABLED=0
+    goos:
+      - darwin
+      - linux
+    goarch:
+      - amd64
+      - arm64
+    ldflags:
+      - -s -w
+      - -X github.com/dedene/memelink-cli/internal/cmd.version={{ .Tag }}
+      - -X github.com/dedene/memelink-cli/internal/cmd.commit={{ .ShortCommit }}
+      - -X github.com/dedene/memelink-cli/internal/cmd.date={{ .Date }}
+
+archives:
+  - formats:
+      - tar.gz
+    name_template: '{{ .ProjectName }}_{{ .Os }}_{{ .Arch }}'
+
+homebrew_casks:
+  - repository:
+      owner: dedene
+      name: homebrew-tap
+      token: '{{ .Env.HOMEBREW_TAP_GITHUB_TOKEN }}'
+    homepage: https://github.com/dedene/memelink-cli
+    directory: Formula
+    install: |
+      bin.install "memelink"
+    description: Generate memes from the terminal
+    license: MIT
+
+checksum:
+  name_template: 'checksums.txt'
+
+changelog:
+  sort: asc
+  filters:
+    exclude:
+      - '^docs:'
+      - '^test:'
+      - '^chore:'
