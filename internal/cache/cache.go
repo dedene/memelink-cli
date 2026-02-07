@@ -22,7 +22,7 @@ type TemplateCache struct {
 // Returns (nil, nil) when: file missing, JSON corrupt, or TTL expired.
 // Only returns a non-nil error for unexpected read failures.
 func LoadTemplates(path string, ttl time.Duration) ([]api.Template, error) {
-	data, err := os.ReadFile(path)
+	data, err := os.ReadFile(path) //nolint:gosec // path is internal cache, not untrusted input
 	if err != nil {
 		if errors.Is(err, os.ErrNotExist) {
 			return nil, nil
@@ -64,7 +64,7 @@ func SaveTemplates(path string, templates []api.Template) error {
 // atomicWrite writes data to path via temp-file + rename.
 func atomicWrite(path string, data []byte) error {
 	dir := filepath.Dir(path)
-	if err := os.MkdirAll(dir, 0o755); err != nil {
+	if err := os.MkdirAll(dir, 0o750); err != nil {
 		return fmt.Errorf("creating directory: %w", err)
 	}
 
@@ -77,12 +77,12 @@ func atomicWrite(path string, data []byte) error {
 
 	defer func() {
 		if tmpPath != "" {
-			os.Remove(tmpPath)
+			_ = os.Remove(tmpPath)
 		}
 	}()
 
 	if _, err := tmp.Write(data); err != nil {
-		tmp.Close()
+		_ = tmp.Close()
 
 		return fmt.Errorf("writing temp file: %w", err)
 	}

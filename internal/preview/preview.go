@@ -1,3 +1,4 @@
+// Package preview renders inline terminal image previews.
 package preview
 
 import (
@@ -57,8 +58,8 @@ func Show(ctx context.Context, imageURL string, opts Options) error {
 
 	width := opts.Width
 	if width <= 0 {
-		w, _, err := term.GetSize(int(os.Stderr.Fd()))
-		if err != nil || w <= 0 {
+		w, _, sizeErr := term.GetSize(int(os.Stderr.Fd()))
+		if sizeErr != nil || w <= 0 {
 			width = 40
 		} else {
 			width = w / 3

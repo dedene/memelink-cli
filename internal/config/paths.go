@@ -7,9 +7,9 @@ import (
 	"path/filepath"
 )
 
-// ConfigDir returns the memelink config directory.
+// Dir returns the memelink config directory.
 // Respects XDG_CONFIG_HOME; defaults to $HOME/.config/memelink.
-func ConfigDir() (string, error) {
+func Dir() (string, error) {
 	if dir := os.Getenv("XDG_CONFIG_HOME"); dir != "" {
 		return filepath.Join(dir, "memelink"), nil
 	}
@@ -24,7 +24,7 @@ func ConfigDir() (string, error) {
 
 // CacheDir returns the memelink cache directory.
 // Respects XDG_CACHE_HOME; defaults to $HOME/.cache/memelink.
-func CacheDir() (string, error) {
+func cacheDir() (string, error) {
 	if dir := os.Getenv("XDG_CACHE_HOME"); dir != "" {
 		return filepath.Join(dir, "memelink"), nil
 	}
@@ -37,9 +37,9 @@ func CacheDir() (string, error) {
 	return filepath.Join(home, ".cache", "memelink"), nil
 }
 
-// ConfigPath returns the full path to the config file.
-func ConfigPath() (string, error) {
-	dir, err := ConfigDir()
+// Path returns the full path to the config file.
+func Path() (string, error) {
+	dir, err := Dir()
 	if err != nil {
 		return "", err
 	}
@@ -49,7 +49,7 @@ func ConfigPath() (string, error) {
 
 // CachePath returns the full path to the template cache file.
 func CachePath() (string, error) {
-	dir, err := CacheDir()
+	dir, err := cacheDir()
 	if err != nil {
 		return "", err
 	}

@@ -103,7 +103,7 @@ func Execute(args []string) (err error) {
 	ctx = ui.WithUI(ctx, u)
 
 	// Config
-	cfgPath, _ := config.ConfigPath()
+	cfgPath, _ := config.Path()
 	cfg, cfgErr := config.Load(cfgPath)
 	if cfgErr != nil {
 		slog.Warn("loading config", "error", cfgErr)

@@ -23,7 +23,7 @@ type ConfigPathCmd struct{}
 
 // Run prints the config file path.
 func (c *ConfigPathCmd) Run(_ context.Context) error {
-	path, err := config.ConfigPath()
+	path, err := config.Path()
 	if err != nil {
 		return err
 	}
@@ -91,7 +91,7 @@ type ConfigSetCmd struct {
 
 // Run sets a config key to a value, persisting to disk.
 func (c *ConfigSetCmd) Run(_ context.Context) error {
-	cfgPath, err := config.ConfigPath()
+	cfgPath, err := config.Path()
 	if err != nil {
 		return err
 	}
@@ -121,7 +121,7 @@ type ConfigUnsetCmd struct {
 
 // Run unsets a config key, persisting to disk.
 func (c *ConfigUnsetCmd) Run(_ context.Context) error {
-	cfgPath, err := config.ConfigPath()
+	cfgPath, err := config.Path()
 	if err != nil {
 		return err
 	}

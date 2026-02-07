@@ -43,20 +43,20 @@ func testCtxNoClient(t *testing.T, jsonMode bool) context.Context {
 }
 
 // testCtxWithConfig returns a context with API client and default config.
-func testCtxWithConfig(t *testing.T, baseURL string, jsonMode bool) context.Context {
+func testCtxWithConfig(t *testing.T, baseURL string) context.Context {
 	t.Helper()
 
-	ctx := testCtx(t, baseURL, jsonMode)
+	ctx := testCtx(t, baseURL, false)
 	ctx = config.WithConfig(ctx, &config.Config{})
 
 	return ctx
 }
 
 // testCtxWithCfg returns a context with API client and the given config.
-func testCtxWithCfg(t *testing.T, baseURL string, jsonMode bool, cfg *config.Config) context.Context {
+func testCtxWithCfg(t *testing.T, baseURL string, cfg *config.Config) context.Context {
 	t.Helper()
 
-	ctx := testCtx(t, baseURL, jsonMode)
+	ctx := testCtx(t, baseURL, false)
 	ctx = config.WithConfig(ctx, cfg)
 
 	return ctx
@@ -410,7 +410,7 @@ func TestGenerateCmd_UsesConfigFormat(t *testing.T) {
 	defer srv.Close()
 
 	cfg := &config.Config{DefaultFormat: "png"}
-	ctx := testCtxWithCfg(t, srv.URL, false, cfg)
+	ctx := testCtxWithCfg(t, srv.URL, cfg)
 	cmd := &GenerateCmd{
 		Template: "drake",
 		Text:     []string{"a", "b"},
@@ -436,7 +436,7 @@ func TestGenerateCmd_FlagOverridesConfig(t *testing.T) {
 	defer srv.Close()
 
 	cfg := &config.Config{DefaultFormat: "png"}
-	ctx := testCtxWithCfg(t, srv.URL, false, cfg)
+	ctx := testCtxWithCfg(t, srv.URL, cfg)
 	cmd := &GenerateCmd{
 		Template: "drake",
 		Text:     []string{"a", "b"},
@@ -464,7 +464,7 @@ func TestGenerateCmd_UsesConfigSafe(t *testing.T) {
 
 	safeTrue := true
 	cfg := &config.Config{Safe: &safeTrue}
-	ctx := testCtxWithCfg(t, srv.URL, false, cfg)
+	ctx := testCtxWithCfg(t, srv.URL, cfg)
 	cmd := &GenerateCmd{
 		Template: "some safe text",
 	}
@@ -489,7 +489,7 @@ func TestGenerateCmd_UsesConfigFont(t *testing.T) {
 	defer srv.Close()
 
 	cfg := &config.Config{DefaultFont: "impact"}
-	ctx := testCtxWithCfg(t, srv.URL, false, cfg)
+	ctx := testCtxWithCfg(t, srv.URL, cfg)
 	cmd := &GenerateCmd{
 		Template: "drake",
 		Text:     []string{"a", "b"},
@@ -515,7 +515,7 @@ func TestGenerateCmd_UsesConfigLayout(t *testing.T) {
 	defer srv.Close()
 
 	cfg := &config.Config{DefaultLayout: "top"}
-	ctx := testCtxWithCfg(t, srv.URL, false, cfg)
+	ctx := testCtxWithCfg(t, srv.URL, cfg)
 	cmd := &GenerateCmd{
 		Template: "drake",
 		Text:     []string{"a", "b"},

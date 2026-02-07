@@ -30,7 +30,7 @@ func tiny1x1PNG(t *testing.T) []byte {
 
 func TestShow_Success(t *testing.T) {
 	data := tiny1x1PNG(t)
-	srv := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+	srv := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, _ *http.Request) {
 		w.Header().Set("Content-Type", "image/png")
 		w.Write(data)
 	}))
@@ -47,7 +47,7 @@ func TestShow_Success(t *testing.T) {
 }
 
 func TestShow_HTTPError(t *testing.T) {
-	srv := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+	srv := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, _ *http.Request) {
 		w.WriteHeader(http.StatusInternalServerError)
 	}))
 	defer srv.Close()
@@ -74,7 +74,7 @@ func TestShow_InvalidURL(t *testing.T) {
 }
 
 func TestShow_CancelledContext(t *testing.T) {
-	srv := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+	srv := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, _ *http.Request) {
 		w.Header().Set("Content-Type", "image/png")
 		w.Write(tiny1x1PNG(t))
 	}))

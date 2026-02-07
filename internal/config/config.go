@@ -3,6 +3,7 @@ package config
 import (
 	"context"
 	"encoding/json"
+	"errors"
 	"fmt"
 	"os"
 	"path/filepath"
@@ -41,6 +42,14 @@ var knownKeys = map[string]knownKey{
 	"cache_ttl":      {validate: validateDuration},
 }
 
+// ErrUnknownKey indicates an invalid config key.
+var ErrUnknownKey = errors.New("unknown config key")
+
+// ErrInvalidValue indicates a config value that fails validation.
+var ErrInvalidValue = errors.New("invalid config value")
+
+const boolTrue = "true"
+
 func validateEnum(allowed ...string) func(string) error {
 	return func(val string) error {
 		for _, a := range allowed {
@@ -49,13 +58,13 @@ func validateEnum(allowed ...string) func(string) error {
 			}
 		}
 
-		return fmt.Errorf("must be one of: %s", strings.Join(allowed, ", "))
+		return fmt.Errorf("%w: must be one of: %s", ErrInvalidValue, strings.Join(allowed, ", "))
 	}
 }
 
 func validateBool(val string) error {
-	if val != "true" && val != "false" {
-		return fmt.Errorf("must be true or false")
+	if val != boolTrue && val != "false" {
+		return fmt.Errorf("%w: must be true or false", ErrInvalidValue)
 	}
 
 	return nil
@@ -88,7 +97,7 @@ func (cfg *Config) CacheTTLDuration() time.Duration {
 // Load reads config from the JSON5 file at path.
 // Returns an empty Config if the file does not exist.
 func Load(path string) (*Config, error) {
-	data, err := os.ReadFile(path)
+	data, err := os.ReadFile(path) //nolint:gosec // path is user config, not untrusted input
 	if os.IsNotExist(err) {
 		return &Config{}, nil
 	}
@@ -120,7 +129,7 @@ func Save(path string, cfg *Config) error {
 // atomicWrite writes data to path via temp-file + rename.
 func atomicWrite(path string, data []byte) error {
 	dir := filepath.Dir(path)
-	if err := os.MkdirAll(dir, 0o755); err != nil {
+	if err := os.MkdirAll(dir, 0o750); err != nil {
 		return fmt.Errorf("creating directory: %w", err)
 	}
 
@@ -133,12 +142,12 @@ func atomicWrite(path string, data []byte) error {
 
 	defer func() {
 		if tmpPath != "" {
-			os.Remove(tmpPath)
+			_ = os.Remove(tmpPath)
 		}
 	}()
 
 	if _, err := tmp.Write(data); err != nil {
-		tmp.Close()
+		_ = tmp.Close()
 
 		return fmt.Errorf("writing temp file: %w", err)
 	}
@@ -200,7 +209,7 @@ func (cfg *Config) Get(key string) (string, bool) {
 func (cfg *Config) Set(key, value string) error {
 	kk, ok := knownKeys[key]
 	if !ok {
-		return fmt.Errorf("unknown config key: %s (valid keys: %s)", key, strings.Join(KnownKeys(), ", "))
+		return fmt.Errorf("%w: %s (valid keys: %s)", ErrUnknownKey, key, strings.Join(KnownKeys(), ", "))
 	}
 
 	if kk.validate != nil {
@@ -217,16 +226,16 @@ func (cfg *Config) Set(key, value string) error {
 	case "default_layout":
 		cfg.DefaultLayout = value
 	case "safe":
-		b := value == "true"
+		b := value == boolTrue
 		cfg.Safe = &b
 	case "auto_copy":
-		b := value == "true"
+		b := value == boolTrue
 		cfg.AutoCopy = &b
 	case "auto_open":
-		b := value == "true"
+		b := value == boolTrue
 		cfg.AutoOpen = &b
 	case "preview":
-		b := value == "true"
+		b := value == boolTrue
 		cfg.Preview = &b
 	case "cache_ttl":
 		cfg.CacheTTL = value
@@ -238,7 +247,7 @@ func (cfg *Config) Set(key, value string) error {
 // Unset removes a config key (resets to zero/nil).
 func (cfg *Config) Unset(key string) error {
 	if _, ok := knownKeys[key]; !ok {
-		return fmt.Errorf("unknown config key: %s (valid keys: %s)", key, strings.Join(KnownKeys(), ", "))
+		return fmt.Errorf("%w: %s (valid keys: %s)", ErrUnknownKey, key, strings.Join(KnownKeys(), ", "))
 	}
 
 	switch key {

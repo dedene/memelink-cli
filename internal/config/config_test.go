@@ -212,7 +212,7 @@ func TestConfigPaths(t *testing.T) {
 	t.Setenv("XDG_CONFIG_HOME", t.TempDir())
 	t.Setenv("XDG_CACHE_HOME", t.TempDir())
 
-	cfgPath, err := config.ConfigPath()
+	cfgPath, err := config.Path()
 	require.NoError(t, err)
 	assert.Contains(t, cfgPath, "memelink")
 	assert.Contains(t, cfgPath, "config.json")
@@ -227,7 +227,7 @@ func TestConfigPathsDefault(t *testing.T) {
 	t.Setenv("XDG_CONFIG_HOME", "")
 	t.Setenv("XDG_CACHE_HOME", "")
 
-	cfgPath, err := config.ConfigPath()
+	cfgPath, err := config.Path()
 	require.NoError(t, err)
 	assert.Contains(t, cfgPath, ".config")
 	assert.Contains(t, cfgPath, "memelink")

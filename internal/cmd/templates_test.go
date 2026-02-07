@@ -33,6 +33,8 @@ const templateDetailJSON = `{
 }`
 
 func TestTemplatesCmd_List(t *testing.T) {
+	t.Setenv("XDG_CACHE_HOME", t.TempDir())
+
 	srv := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, _ *http.Request) {
 		w.Header().Set("Content-Type", "application/json")
 		_, _ = w.Write([]byte(templatesListJSON))
@@ -42,23 +44,10 @@ func TestTemplatesCmd_List(t *testing.T) {
 	ctx := testCtx(t, srv.URL, false)
 	cmd := &TemplatesCmd{}
 
-	r, w, err := os.Pipe()
-	require.NoError(t, err)
+	output := captureStdout(t, func() {
+		require.NoError(t, cmd.Run(ctx, &RootFlags{NoInput: true}))
+	})
 
-	origStdout := os.Stdout
-	os.Stdout = w
-
-	runErr := cmd.Run(ctx, &RootFlags{})
-	_ = w.Close()
-	os.Stdout = origStdout
-
-	require.NoError(t, runErr)
-
-	buf := make([]byte, 8192)
-	n, _ := r.Read(buf)
-	_ = r.Close()
-
-	output := string(buf[:n])
 	assert.Contains(t, output, "drake")
 	assert.Contains(t, output, "Drake Hotline Bling")
 	assert.Contains(t, output, "buzz")
@@ -66,6 +55,8 @@ func TestTemplatesCmd_List(t *testing.T) {
 }
 
 func TestTemplatesCmd_List_JSON(t *testing.T) {
+	t.Setenv("XDG_CACHE_HOME", t.TempDir())
+
 	srv := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, _ *http.Request) {
 		w.Header().Set("Content-Type", "application/json")
 		_, _ = w.Write([]byte(templatesListJSON))
@@ -75,29 +66,19 @@ func TestTemplatesCmd_List_JSON(t *testing.T) {
 	ctx := testCtx(t, srv.URL, true)
 	cmd := &TemplatesCmd{}
 
-	r, w, err := os.Pipe()
-	require.NoError(t, err)
-
-	origStdout := os.Stdout
-	os.Stdout = w
-
-	runErr := cmd.Run(ctx, &RootFlags{})
-	_ = w.Close()
-	os.Stdout = origStdout
-
-	require.NoError(t, runErr)
-
-	buf := make([]byte, 8192)
-	n, _ := r.Read(buf)
-	_ = r.Close()
+	output := captureStdout(t, func() {
+		require.NoError(t, cmd.Run(ctx, &RootFlags{}))
+	})
 
 	var parsed []map[string]any
-	require.NoError(t, json.Unmarshal(buf[:n], &parsed))
+	require.NoError(t, json.Unmarshal([]byte(output), &parsed))
 	assert.Len(t, parsed, 3)
 	assert.Equal(t, "drake", parsed[0]["id"])
 }
 
 func TestTemplatesCmd_List_Filter(t *testing.T) {
+	t.Setenv("XDG_CACHE_HOME", t.TempDir())
+
 	var gotQuery string
 	srv := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		gotQuery = r.URL.RawQuery
@@ -109,27 +90,17 @@ func TestTemplatesCmd_List_Filter(t *testing.T) {
 	ctx := testCtx(t, srv.URL, false)
 	cmd := &TemplatesCmd{Filter: "drake"}
 
-	r, w, err := os.Pipe()
-	require.NoError(t, err)
-
-	origStdout := os.Stdout
-	os.Stdout = w
-
-	runErr := cmd.Run(ctx, &RootFlags{})
-	_ = w.Close()
-	os.Stdout = origStdout
-
-	require.NoError(t, runErr)
-
-	buf := make([]byte, 8192)
-	n, _ := r.Read(buf)
-	_ = r.Close()
+	output := captureStdout(t, func() {
+		require.NoError(t, cmd.Run(ctx, &RootFlags{NoInput: true}))
+	})
 
 	assert.Contains(t, gotQuery, "filter=drake")
-	assert.Contains(t, string(buf[:n]), "1 templates")
+	assert.Contains(t, output, "1 templates")
 }
 
 func TestTemplatesCmd_List_Animated(t *testing.T) {
+	t.Setenv("XDG_CACHE_HOME", t.TempDir())
+
 	srv := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, _ *http.Request) {
 		w.Header().Set("Content-Type", "application/json")
 		_, _ = w.Write([]byte(templatesListJSON))
@@ -139,23 +110,10 @@ func TestTemplatesCmd_List_Animated(t *testing.T) {
 	ctx := testCtx(t, srv.URL, false)
 	cmd := &TemplatesCmd{Animated: true}
 
-	r, w, err := os.Pipe()
-	require.NoError(t, err)
+	output := captureStdout(t, func() {
+		require.NoError(t, cmd.Run(ctx, &RootFlags{NoInput: true}))
+	})
 
-	origStdout := os.Stdout
-	os.Stdout = w
-
-	runErr := cmd.Run(ctx, &RootFlags{})
-	_ = w.Close()
-	os.Stdout = origStdout
-
-	require.NoError(t, runErr)
-
-	buf := make([]byte, 8192)
-	n, _ := r.Read(buf)
-	_ = r.Close()
-
-	output := string(buf[:n])
 	// drake + fry are animated, buzz is not
 	assert.Contains(t, output, "drake")
 	assert.Contains(t, output, "fry")
@@ -174,23 +132,10 @@ func TestTemplatesCmd_Detail(t *testing.T) {
 	ctx := testCtx(t, srv.URL, false)
 	cmd := &TemplatesCmd{ID: "drake"}
 
-	r, w, err := os.Pipe()
-	require.NoError(t, err)
+	output := captureStdout(t, func() {
+		require.NoError(t, cmd.Run(ctx, &RootFlags{}))
+	})
 
-	origStdout := os.Stdout
-	os.Stdout = w
-
-	runErr := cmd.Run(ctx, &RootFlags{})
-	_ = w.Close()
-	os.Stdout = origStdout
-
-	require.NoError(t, runErr)
-
-	buf := make([]byte, 8192)
-	n, _ := r.Read(buf)
-	_ = r.Close()
-
-	output := string(buf[:n])
 	assert.Contains(t, output, "ID:       drake")
 	assert.Contains(t, output, "Name:     Drake Hotline Bling")
 	assert.Contains(t, output, "Lines:    2")
@@ -270,7 +215,7 @@ func TestTemplatesCmd_List_UsesCache(t *testing.T) {
 	}))
 	defer srv.Close()
 
-	ctx := testCtxWithConfig(t, srv.URL, false)
+	ctx := testCtxWithConfig(t, srv.URL)
 	cmd := &TemplatesCmd{}
 
 	output := captureStdout(t, func() {
@@ -296,7 +241,7 @@ func TestTemplatesCmd_List_RefreshBypassesCache(t *testing.T) {
 	}))
 	defer srv.Close()
 
-	ctx := testCtxWithConfig(t, srv.URL, false)
+	ctx := testCtxWithConfig(t, srv.URL)
 	cmd := &TemplatesCmd{Refresh: true}
 
 	output := captureStdout(t, func() {
@@ -321,7 +266,7 @@ func TestTemplatesCmd_List_FilterBypassesCache(t *testing.T) {
 	}))
 	defer srv.Close()
 
-	ctx := testCtxWithConfig(t, srv.URL, false)
+	ctx := testCtxWithConfig(t, srv.URL)
 	cmd := &TemplatesCmd{Filter: "drake"}
 
 	output := captureStdout(t, func() {
@@ -342,7 +287,7 @@ func TestTemplatesCmd_List_PopulatesCache(t *testing.T) {
 	}))
 	defer srv.Close()
 
-	ctx := testCtxWithConfig(t, srv.URL, false)
+	ctx := testCtxWithConfig(t, srv.URL)
 	cmd := &TemplatesCmd{}
 
 	captureStdout(t, func() {
