@@ -111,19 +111,13 @@ Inline image preview renders in terminals that support it (iTerm2, Kitty, Sixel)
 | `--force`    | Skip confirmations                |
 | `--version`  | Print version and exit            |
 
-## Agent Skills
+## Agent Skill
 
-This repo includes an [Agent Skill](https://agentskills.io) so AI coding agents (Claude Code,
-Cursor, Codex, etc.) can generate memes on your behalf.
+This CLI is available as an [open agent skill](https://skills.sh/) for AI assistants including [Claude Code](https://claude.ai/code), [OpenClaw](https://openclaw.ai/), Cursor, and GitHub Copilot:
 
-**Install the skill:**
-
-```sh
+```bash
 npx skills add dedene/memelink-cli
 ```
-
-Once installed, ask your agent to "generate a meme about deploying on Friday" and it will use
-memelink automatically.
 
 ## Environment
 
