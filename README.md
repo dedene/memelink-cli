@@ -6,6 +6,14 @@
 
 Generate memes from the terminal using the [Memegen.link](https://memegen.link) API.
 
+## Agent Skill
+
+This CLI is available as an [open agent skill](https://skills.sh/) for AI assistants including [Claude Code](https://claude.ai/code), [OpenClaw](https://openclaw.ai/), [Codex](https://github.com/openai/codex), Cursor, GitHub Copilot, and [35+ agents](https://github.com/vercel-labs/skills#supported-agents).
+
+```bash
+npx skills add dedene/memelink-cli
+```
+
 ## Install
 
 **Homebrew:**
@@ -110,14 +118,6 @@ Inline image preview renders in terminals that support it (iTerm2, Kitty, Sixel)
 | `--no-input` | Never prompt; fail instead        |
 | `--force`    | Skip confirmations                |
 | `--version`  | Print version and exit            |
-
-## Agent Skill
-
-This CLI is available as an [open agent skill](https://skills.sh/) for AI assistants including [Claude Code](https://claude.ai/code), [OpenClaw](https://openclaw.ai/), Cursor, and GitHub Copilot:
-
-```bash
-npx skills add dedene/memelink-cli
-```
 
 ## Environment
 
