@@ -83,3 +83,10 @@ Keys: default_format, default_font, default_layout, safe, auto_copy, auto_open, 
 - `--no-input` -- disable interactive prompts
 - `--verbose` -- debug logging
 - `--color auto|always|never` -- color output
+
+
+## Installation
+
+```bash
+brew install dedene/tap/memelink-cli
+```
