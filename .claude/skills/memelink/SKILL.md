@@ -6,6 +6,26 @@ description: >
   funny images, or building meme URLs from text. Supports auto-generate,
   template-based, and custom background modes.
 argument-hint: "[text or template]"
+license: MIT
+homepage: https://github.com/dedene/memelink-cli
+metadata:
+  author: dedene
+  version: "1.1.0"
+  openclaw:
+    primaryEnv: MEMEGEN_API_KEY
+    requires:
+      env:
+        - MEMEGEN_API_KEY
+      bins:
+        - memelink
+    install:
+      - kind: brew
+        tap: dedene/tap
+        formula: memelink
+        bins: [memelink]
+      - kind: go
+        package: github.com/dedene/memelink-cli/cmd/memelink
+        bins: [memelink]
 ---
 
 # memelink CLI
